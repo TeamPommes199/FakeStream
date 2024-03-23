@@ -10,6 +10,7 @@ bits = 0
 aboLength = {}
 werbung = False
 pause = False
+sound = True
 spectator = 1
 
 fMT = "        {randomName} followed"
@@ -23,7 +24,7 @@ rTM = """           {randomName} raidet mit {spectatorRaid} Zuschauern! +{newFol
 
 def load_data_from_file(filename):
     try:
-        with open(filename, 'r') as file:
+        with open(filename, 'r', encoding='utf-8') as file:
             data = file.readlines()
             followCount = int(data[0].split('- ')[1])
             aboCount = int(data[1].split('- ')[1])
@@ -104,7 +105,7 @@ def choiceType():
 
     messageType = [1, 2, 3, 4, 5, 6, 7]
 
-    randomMessageType = random.choices(messageType, weights=(100 * ((followCount + 1) / 50), 12 * ((followCount + 1) / 47.5), 0.25 * (followCount + 1) / 25, 0.1 * (followCount + 1) / 30, 0.12 * (followCount + 1) / 50, 0.15 * (followCount + 1) / 75, 0.28 * (followCount + 1) / 18), k=1)
+    randomMessageType = random.choices(messageType, weights=(100 * ((followCount + 1) / 50), 12 * ((followCount + 1) / 47.5), 0.25 * (followCount + 1) / 25, 0.1 * (followCount + 1) / 30, 0.12 * (followCount + 1) / 50, 0.15 * (followCount + 1) / 75, 0.08 * (followCount + 1) / 18), k=1)
 
 def choiceName():
     global randomName
@@ -258,18 +259,22 @@ def choiceMessage():
     randomMessage = random.choice(messages)
 
 def addAbo():
+    global aboLength
+    global randomName
+
     if randomName in aboLength:
         aboLength[randomName] += 1
-    
     else:
         aboLength[randomName] = 1
 
 def configuration():
     global pause
+    global sound
     pause = True
 
     category = input("""Kategorie auswählen:
                      (1) Messages
+                     (2) Sound
                      """)
     
     if category == "1":
@@ -352,17 +357,29 @@ def configuration():
             newMessage = input("""Neue Message: """)
 
             rTM = newMessage
-            
+    
+    if category == "2":
+        cSound = input("""Sound:
+                    (1) Ja
+                    (2) Nein
+                       """)
+        
+        if cSound == "1":
+            sound = True
+        
+        elif cSound == "2":
+            sound = False
+
     pause = False
 
 loadDataQ = input("Data Laden? (Ja/Nein): ")
 saveDataQ = input("Data Saven? (Ja/Nein): ")
 
 if saveDataQ == "Ja":
-    saveDataFile = input("Datei-Namen: ") # /users/user/documents/funtests/FakeStreamTest oder dein pfad wo du speichern willst
+    saveDataFile = input("Datei-Namen: ") # C:\Users\User\Documents\funtests\FakeStreamTest\test1.txt oder dein pfad wo du speichern willst
 
 if loadDataQ == "Ja":
-    loadDataFile = input("Datei-Namen: ") # /users/user/documents/funtests/FakeStreamTest oder dein pfad wo du speichern willst
+    loadDataFile = input("Datei-Namen: ") # C:\Users\User\Documents\funtests\FakeStreamTest\test1.txt oder dein pfad wo du speichern willst
     followCount, aboCount, money, bits, fMT, nAMT, lAMT, bMT, dMT, sGMT, rTM, aboLength = load_data_from_file(loadDataFile)
 
     print("Follow Count:", followCount)
@@ -379,19 +396,30 @@ if loadDataQ == "Ja":
 
 keyboard.add_hotkey("w + 3", werbung30)
 keyboard.add_hotkey("w + 6", werbung60)
-keyboard.add_hotkey("alt + shift + c", configuration)
+keyboard.add_hotkey("alt + shift", configuration)
 
 choiceName()
 
 while True:
     if pause == False:
+        if followCount >= 0 and followCount < 99:
+            timer = random.uniform(7.5, 10) / (aboCount + 1) * 25
+        
+        elif followCount >= 100 and followCount < 299:
+            timer = random.uniform(5.8, 6.4) / (aboCount + 1) * 25
 
-        timer2 = random.randint(5, 15)
-        timer2v = timer2 * spectator
-        timer1 = random.uniform(0.025, 1)
-        timer1v = timer1 * spectator
-        timer0 = random.uniform(timer1v, timer2v)
-        timer = timer0 / ((followCount + 1) / 25)
+        elif followCount >= 300 and followCount < 499:
+            timer = random.uniform(4.5, 5) / (aboCount + 1) * 25
+        
+        elif followCount >= 500 and followCount < 999:
+            timer = random.uniform(3.25, 3.8) / (aboCount + 1) * 25
+
+        elif followCount >= 1000 and followCount < 1999:
+            timer = random.uniform(2.1, 2.8) / (aboCount + 1) * 25
+            
+        elif followCount >= 2000:
+            timer = random.uniform(1.4, 2) / (aboCount + 1) * 25
+
 
         time.sleep(timer)
 
@@ -412,7 +440,8 @@ while True:
             
             print(f"""{followMessage}
                 Follow Count: {followCount}""")
-            pyttsx3.speak(f"{randomName} folgt nun!")
+            if sound == True:
+                pyttsx3.speak(f"{randomName} folgt nun!")
         
         if randomMessageType == [3] and followCount >= 20:
             choiceName()
@@ -427,7 +456,9 @@ while True:
                 newAboMessage = nAMT.replace("{randomName}", randomName).replace("{money}", str(money)).replace("{aboCount}", str(aboCount))
 
                 print(newAboMessage)
-                pyttsx3.speak(f"{randomName} subt!")
+
+                if sound == True:
+                    pyttsx3.speak(f"{randomName} subt!")
 
             elif aboLength[randomName] >= 2:
                 aboCount -= 1
@@ -435,7 +466,9 @@ while True:
                 longAboMessage = lAMT.replace("{randomName}", randomName).replace("{money}", str(money)).replace("{aboLenght[randomName]}", str(aboLength[randomName]))
 
                 print(longAboMessage)
-                pyttsx3.speak(f"{randomName}, Abonniert im {aboLength[randomName]}. Monat!")
+
+                if sound == True:
+                    pyttsx3.speak(f"{randomName}, Abonniert im {aboLength[randomName]}. Monat!")
             
         if randomMessageType == [4] and followCount >= 20:
             choiceName()
@@ -446,7 +479,8 @@ while True:
             bitsMessage = bMT.replace("{randomName}", randomName).replace("{bits}", str(bits)).replace("{bitsPlus}", str(bitsPlus))
 
             print(bitsMessage)
-            pyttsx3.speak(f"{randomName} spendet {bitsPlus[0]} Bits!")
+            if sound == True:
+                pyttsx3.speak(f"{randomName} spendet {bitsPlus[0]} Bits!")
 
         if randomMessageType == [5] and followCount >= 20:
             choiceName()
@@ -457,15 +491,19 @@ while True:
             donationMessage = dMT.replace("{randomName}", randomName).replace("{money}", str(money)).replace("{moneyPlus}", str(moneyPlus))
 
             print(donationMessage)
-            pyttsx3.speak(f"{randomName} spendet {moneyPlus[0]} €")
+
+            if sound == True:
+                pyttsx3.speak(f"{randomName} spendet {moneyPlus[0]} €")
         
         if randomMessageType == [6] and followCount >= 20:
             choiceName()
 
-            subGiftMessage = sGMT.replace("{randomName}", randomName).replace("{giftSubs}", str(giftSubs))
-            pyttsx3.speak(f"{randomName} giftet {giftSubs} Subs!")
-            
             giftSubs = random.randint(1, 10)
+
+            subGiftMessage = sGMT.replace("{randomName}", randomName).replace("{giftSubs}", str(giftSubs))
+
+            if sound == True:
+                pyttsx3.speak(f"{randomName} giftet {giftSubs} Subs!")
 
             while giftSubs > 0:
                 choiceName()
@@ -508,7 +546,9 @@ while True:
             raidMessage = rTM.replace("{randomName}", randomName).replace("{spectatorRaid}", str(spectatorRaid)).replace("{newFollower}", str(newFollower))
 
             print(raidMessage)
-            pyttsx3.speak(f"{randomName} raidet mit {spectatorRaid} Zuschauern!")
+
+            if sound == True:
+                pyttsx3.speak(f"{randomName} raidet mit {spectatorRaid} Zuschauern!")
     
     if saveDataQ == "Ja" or loadDataQ == "Ja":
         if saveDataQ == "Ja":
