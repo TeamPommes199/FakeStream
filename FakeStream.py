@@ -12,6 +12,7 @@ werbung = False
 pause = False
 sound = True
 spectator = 1
+antworten = []
 
 fMT = "        {randomName} followed"
 nAMT = """          {randomName} abonniert! Dein Geld: {money} Euro! Abo Count: {aboCount}!"""
@@ -372,6 +373,62 @@ def configuration():
 
     pause = False
 
+def abstimmung():
+    global pause
+    global antworten
+
+    pause = True
+
+    print("Wie lautet der Titel der Umfrage?")
+
+    titel = input("")
+
+    print("Wie viele Antwort möglich keiten soll es geben?")
+
+    time.sleep(0.1)
+
+    aAnzahl = input("")
+
+    while int(aAnzahl) > 0:
+        rAntwort = 1
+        votes = 0
+
+        antwort = input(f"Antwort, dann Enter drücken: ")
+
+        antworten.insert(rAntwort - 1, (antwort, votes))
+
+        rAntwort += 2
+        aAnzahl = int(aAnzahl) - 1
+    
+    rAntwort = 1
+
+    tAbstimmung = 10
+
+    while tAbstimmung > 0:
+        for i in range(len(antworten)):
+            nVotes = random.randint(1, 20)
+            antwort, aVotes = antworten[i]
+            aVotes += nVotes
+            antworten[i] = (antwort, aVotes)
+            print(f"{antwort}: {aVotes} Votes")
+
+        tAbstimmung -= 1
+
+        time.sleep(3)
+    
+    print("")
+    print(f"Ergebnisse: {titel}")
+    for antwort, aVotes in antworten:
+        print(f"{antwort}: {aVotes} Votes")
+    print("")
+
+    antworten.clear()
+
+    time.sleep(3)
+
+    pause = False
+
+
 loadDataQ = input("Data Laden? (Ja/Nein): ")
 saveDataQ = input("Data Saven? (Ja/Nein): ")
 
@@ -397,28 +454,41 @@ if loadDataQ == "Ja":
 keyboard.add_hotkey("w + 3", werbung30)
 keyboard.add_hotkey("w + 6", werbung60)
 keyboard.add_hotkey("alt + shift", configuration)
+keyboard.add_hotkey("alt + a", abstimmung)
 
 choiceName()
 
 while True:
     if pause == False:
         if followCount >= 0 and followCount < 99:
-            timer = random.uniform(7.5, 10) / (aboCount + 1) * 25
+            timer = random.uniform(2.5, 5) / (aboCount + 1) * 25
+            if timer > 5:
+                timer = 5
         
         elif followCount >= 100 and followCount < 299:
-            timer = random.uniform(5.8, 6.4) / (aboCount + 1) * 25
+            timer = random.uniform(2.1, 4) / (aboCount + 1) * 25
+            if timer > 4:
+                timer = 4
 
         elif followCount >= 300 and followCount < 499:
-            timer = random.uniform(4.5, 5) / (aboCount + 1) * 25
+            timer = random.uniform(1.8, 3.25) / (aboCount + 1) * 25
+            if timer > 3.25:
+                timer = 3.25
         
         elif followCount >= 500 and followCount < 999:
-            timer = random.uniform(3.25, 3.8) / (aboCount + 1) * 25
+            timer = random.uniform(1.6, 2.75) / (aboCount + 1) * 25
+            if timer > 2.75:
+                timer = 2.75
 
         elif followCount >= 1000 and followCount < 1999:
-            timer = random.uniform(2.1, 2.8) / (aboCount + 1) * 25
+            timer = random.uniform(1.5, 2.5) / (aboCount + 1) * 25
+            if timer > 2.5:
+                timer = 2.5
             
         elif followCount >= 2000:
-            timer = random.uniform(1.4, 2) / (aboCount + 1) * 25
+            timer = random.uniform(1.4, 2.4) / (aboCount + 1) * 25
+            if timer > 2.4:
+                timer = 2.4
 
 
         time.sleep(timer)
