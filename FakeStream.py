@@ -783,8 +783,7 @@ Vergeben machst du es, mit:
     pause = False
 
 def action():
-    global timer
-    global actionMessage
+    global actionMessage, timer, followMessage, followCount, randomMessageType, randomName, randomMessage, aboCount, aboLength, newAboMessage, nAMT, longAboMessage, lAMT, bitsValue, bitsPlus, bits, bitsMessage, bMT, moneyPlus, moneyValue, donationMessage, dMT, giftSubs, subGiftMessage, sGMT, subGiftLongAboMessage, sGlAMT, spectatorRaid, newFollower, raidMessage, rTM, fSound, saveDataQ, loadDataQ, sound, sspectator, spectator, start1, start2, start3, money, pause, fMT
 
     while True:
         if pause == False:
@@ -842,8 +841,8 @@ def action():
 
                 print(randomName + ": " + randomMessage)
 
-                actionMessage = tk.StringVar
-                actionMessage.set(randomName + ": " + randomMessage)
+                actionMessage = tk.StringVar()
+                actionMessage.set(f"{randomName} :  {randomMessage}")
 
                 reply()
 
@@ -1009,10 +1008,9 @@ keyboard.add_hotkey("alt + s", shop)
 
 choiceName()
 
-label1 = tk.Label(root, text="actionMessage")
-label1.pack()
+action()
 
-for item in label1.keys():
-    print(item, ": ", label1[item])
+label1 = tk.Label(root, text=actionMessage)
+label1.pack()
 
 root.mainloop()
